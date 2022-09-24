@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _audioQuery = new OnAudioQuery();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   @override
   void initState() {
     // TODO: implement initState
@@ -49,15 +51,46 @@ class _HomePageState extends State<HomePage> {
           }
           return ListView.builder(
             itemBuilder: (context, index) => ListTile(
-              leading: Icon(Icons.music_note_outlined,color: Colors.black,size: 30,),
-              title: Text(items.data![index].displayNameWOExt,style: TextStyle(color: Colors.black),),
-              subtitle: Text(items.data![index].artist.toString(),style: TextStyle(color: Colors.black)),
-              trailing: Icon(Icons.more_vert,color: Colors.black,size: 30,),
+              leading: Container(
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              title: Text(
+                items.data![index].displayNameWOExt,
+                style: TextStyle(color: Colors.black),
+              ),
+              subtitle: Text(items.data![index].artist.toString(),
+                  style: TextStyle(color: Colors.black)),
+              trailing: Icon(
+                Icons.more_vert,
+                color: Colors.black,
+                size: 30,
+              ),
+              onTap: () {
+                playSong(items.data![index].uri);
+              },
             ),
             itemCount: items.data!.length,
           );
         },
       ),
     );
+  }
+
+  playSong(String? uri) {
+    try{
+      _audioPlayer.setAudioSource(
+      AudioSource.uri(
+        Uri.parse(uri!),
+      ),
+    );
+    _audioPlayer.play();
+    }on Exception {
+      print('Error While passing song');
+    }
   }
 }
